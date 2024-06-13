@@ -40,8 +40,6 @@ async function main() {
 }
 
 
-
-
 app.set("view engine","ejs");
 app.set("views", path.join(__dirname, "views"));
 app.use(express.urlencoded({extended:true}));
@@ -60,9 +58,6 @@ const store=MongoStore.create({
 });
 
 
-
-
-
 store.on("error", ()=>{
       console.log("ERROR in MONGO SESSION STORE", err);
 });
@@ -78,18 +73,6 @@ const sessionOptions={
         httpOnly:true,
      },
 };
-
-/*
-app.get("/", (req, res)=>{           //create a  root route 
-    res.send("hi, I am root");
-});
-
-*/
-
-
-
-
-
 
 app.use(session(sessionOptions));
 app.use(flash());
@@ -110,61 +93,11 @@ app.use((req,res,next) =>{
    res.locals.currUser=req.user;
    next();
 
+})
+
+app.get("/", (req, res)=>{
+    res.redirect("/listings");
 });
-
-
-/*
-
-app.get("/demouser", async(req,res)=>{
-
-    let fakeUser=new User({
-        email:"student@gmail.com",
-        username:"delta-student"
-    });
-
-    let registeredUser=await User.register(fakeUser,"helloworld");
-    res.send(registeredUser);
-});
-*/
-
-
-
-
-
-/*
-
-const validateListing=(req,res,next)=>{
-
-    let {error}=listingSchema.validate(req.body);
-    
-    if(error) {
-        let errMsg=error.details.map((el)=>el.message).join(",");
-        throw new ExpressError(400,errMsg);
-    } else {
-        next();
-    }
-}
-
-
-const validateReview=(req,res,next) => {
-    let { error} =reviewSchema.validate(req.body);
-    if(error) {
-        let errMsg=error.details.map((el)=>el.message).join(",");
-        throw new ExpressError(400,errMsg);
-    }else {
-        next();
-    }
-};
-*/
-
-
-
-
-
-
-
-
-
 
 
 app.use("/listings",listingRouter);
@@ -172,165 +105,15 @@ app.use("/listings/:id/reviews",reviewRouter);
 app.use("/",userRouter);
 
 
-
-
-
-
-/*
-//index route
-app.get("/listings",wrapAsync( async(req, res)=>{
-  const allListings= await Listing.find({});
-  res.render("listings/index.ejs",{allListings});
-}));
-*/
-
-
-
-
-
-/*
-//new Route
-
-app.get("/listing/new",(req,res)=>{
-    res.render("listings/new.ejs");
-
-});
-
-*/
-
-
-
-
-
-
-
-
-//show route
-
-/*
-
-app.get("/listings/:id", wrapAsync(async (req,res)=>{
-    let {id}=req.params;
-   const listing= await Listing.findById(id).populate("reviews");
-  res.render("listings/show.ejs",{listing});
-  
-}));
-*/
-
-
-
-
-
-
-//create post
-/*
-app.post(
-    "/listings", 
-    validateListing, 
-    wrapAsync (async(req,res,next)=>{
-   //let  {title,description,image,price,country,location}=req.body;
- //  let listing=req.body;
-        
-        const newListing =new Listing(req.body.listing);
-    
-   await newListing.save();
- //  console.log(newListing);
-  res.redirect("/listings");
-    })
-
-);
-*/
-
-
-
-
-
-
-
-/*
-   Update:Edit and update Route
-
-   Get   /listings/:id/edit  --->edit form --->submit
-
-
-   put   /listings/:id      
-*/
-
-
-/*
-app.get("/listings/:id/edit", 
- wrapAsync(async(req,res) =>{
-     let{id}=req.params;
-      const listing= await Listing.findById(id);
-      res.render("listings/edit.ejs",{listing});
-      
-
-}));
-
-app.put("/listings/:id",
-validateListing,
- wrapAsync( async(req,res)=>{
-    
-      let {id}=req.params;
-      await Listing.findByIdAndUpdate(id,{...req.body.listing});
-       res.redirect(`/Listings/${id}`);
-}));
-
-//DELete Route
-
-app.delete(
-       "/listings/:id",
-         wrapAsync( async(req,res)=>{
-        let {id}=req.params;
-        let deletedListing= await Listing.findByIdAndDelete(id);
-    console.log(deletedListing);
-    res.redirect("/listings");
-})
-);
-
-
-
-*/
-
-
-
-
-
-/*
-
-app.get("/testListing", async (req,res)=>{
-    let sampleListing=new Listing({
-        title:"My new Villa",
-        description:"By the Beach",
-        price:1200,
-        location:"Calangute, Goa",
-        country:"India",
-    });
-
-    await sampleListing.save();
-    console.log("sample was saved");
-    res.send("successful testing");
-
-});
-*/
-
   app.all("*",(req,res,next) =>{
     next(new ExpressError(404, " page Not Found!"));
   });
 
 
-   
-
-
 app.use((err,req,res,next) => {
     let {statusCode=500, message="Something went wrong!"}=err;
-   // res.send("some thing went wrong");
-  // res.status(statusCode).send(message);
         res.status(statusCode).render("error.ejs",{message});
 });
-
-
-
 
 
 app.listen(8080, ()=>{
