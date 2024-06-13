@@ -6,6 +6,7 @@ if(process.env.NODE_ENV!="production") {
 const express=require("express");  //import the express with the help of require module 
 const app=express();
 const mongoose=require("mongoose");
+const port = process.env.PORT || 8080;
 //const Listing=require("./models/listing.js");
 const path=require("path");
 const methodOverride=require("method-override");
@@ -333,7 +334,7 @@ app.use((err,req,res,next) => {
 
 
 
-app.listen(8080, ()=>{
-    console.log("server is listening at port 8080");
+app.listen(port, ()=>{
+    console.log(`server is listening at port : ${port}`);
 
 });
